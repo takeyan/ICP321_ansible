@@ -4,9 +4,9 @@ icp-docker-18.06.2_x86_64.bini*.tar.gz
 icp-docker-18.06.2_x86_64.bin
 .ssh/*
 .ansible/*
-.bash_history/*
-.bashrc/*
+.bash_history
+.bashrc
 .cache/*
 .gnupg/*
-.profile/*
-.viminfo/*
+.profile
+.viminfo
