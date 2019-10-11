@@ -1,3 +1,3 @@
 .git/*
 .gitignore
-.wget-hsts/*
+.wget-hsts
