@@ -4,9 +4,9 @@
 # US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
 ---
-cluster_name: icphub101
-# cluster_CA_domain: "{{ cluster_name }}.icp"
-cluster_CA_domain: "{{ cluster_name }}.swallowlab.work"
+cluster_name: edgehub130
+cluster_CA_domain: "{{ cluster_name }}.icp"
+# cluster_CA_domain: "{{ cluster_name }}.swallowlab.work"
 ansible_python_interpreter: /usr/bin/python3
 
 ## Network Settings
