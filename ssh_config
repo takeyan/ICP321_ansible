@@ -1,0 +1,9 @@
+Host 10.*
+  User root
+  IdentityFile ~/.ssh/id_ansible_rsa
+  StrictHostKeyChecking no
+  UserKnownHostsFile /dev/null
+
+# add the following descriptions to /etc/ansible/ansible.cfg 
+# # [ssh_connection]
+# # ssh_args = -F ~/ICP321_ansible/ssh_config
