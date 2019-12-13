@@ -1,4 +1,4 @@
-Host 10.*
+Host *
   User root
   IdentityFile ~/.ssh/id_ansible_rsa
   StrictHostKeyChecking no

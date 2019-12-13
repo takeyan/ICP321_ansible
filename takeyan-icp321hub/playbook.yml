@@ -1,0 +1,103 @@
+---
+- hosts: hub
+  gather_facts: no
+  become: yes
+
+  tasks:
+  - name: create work directory
+    file:
+      path: /opt/icp32-install
+      state: directory
+      mode: 0755
+
+  - name: create work directory2
+    file:
+      path: /opt/icp32-install/temp
+      state: directory
+      mode: 0755
+
+  - name: Copy docker installation package to the target
+    copy:
+      src: /root/icp-docker-18.09.7_x86_64.bin
+      dest: /opt/icp32-install/temp/icp-docker-18.09.7_x86_64.bin
+      force: no 
+      mode: 0755
+
+  - name: Copy ICP32 installation package to the target
+    copy:
+      src: /root/ibm-cloud-private-x86_64-3.2.1.tar.gz
+      dest: /opt/icp32-install/temp/ibm-cloud-private-x86_64-3.2.1.tar.gz
+      force: no 
+
+  - name: Copy /etc/hosts
+    copy:
+      src: ./etc_hosts
+      dest: /etc/hosts
+      backup: yes
+
+  - name: Install Docker
+    command: "/opt/icp32-install/temp/icp-docker-18.09.7_x86_64.bin --install"
+    args:
+      creates: /usr/bin/docker
+
+  - name: uncompress the installation package
+    shell: |
+      tar xf  /opt/icp32-install/temp/ibm-cloud-private-x86_64-3.2.1.tar.gz -O | docker load
+    args:
+      creates: /opt/icp32-install/temp/docker_load_completed
+
+  - name: mark completion of uncompress      
+    file: 
+      path: /opt/icp32-install/temp/docker_load_completed
+      state: touch 
+
+  - name: create cluster directory             
+    shell: |
+      docker run -v $(pwd):/data -e LICENSE=accept ibmcom/icp-inception-amd64:3.2.1-ee cp -r cluster /data
+    args:
+      chdir: /opt/icp32-install
+      creates: /opt/icp32-install/cluster
+
+
+  - name: Copy a private key file
+    copy:
+      src: /root/.ssh/id_rsa 
+      dest: /opt/icp32-install/cluster/ssh_key
+      remote_src: yes 
+      force: yes 
+      mode: 0555
+
+
+  - name: Copy the inventory file for icp32 installation 
+    copy:
+      src: /root/ICP321_ansible/edgehub130/icp32_hosts
+      dest: /opt/icp32-install/cluster/hosts 
+      mode: 0555
+
+  - name: create image directory
+    file:
+      path: /opt/icp32-install/cluster/images
+      state: directory
+      mode: 0755
+
+
+  - name: move the installation package        
+    command: "mv /opt/icp32-install/temp/ibm-cloud-private-x86_64-3.2.1.tar.gz /opt/icp32-install/cluster/images/"
+    args:
+      creates: /opt/icp32-install/cluster/images/ibm-cloud-private-x86_64-3.2.1.tar.gz
+
+  - name: create a dummy file to prevent dupulicate transferring
+    file:
+      path: /opt/icp32-install/temp/ibm-cloud-private-x86_64-3.2.1.tar.gz
+      state: touch
+      force: no
+
+
+  - name: Copy the config.yaml file for icp32 installation
+    copy:
+      src: /root/ICP321_ansible/edgehub130/config.hub.yaml
+      dest: /opt/icp32-install/cluster/config.yaml
+      force: yes
+      backup: yes
+      mode: 0655
+
